@@ -1,0 +1,60 @@
+ public void OdbcTest() {
+				Connection con = null;// 连接
+				Statement stmt = null;// 执行语句
+				ResultSet rst = null;// 结果集
+
+				try {
+					/********* 用JDBC-ODBC桥连接Oracle type 1 ***************/
+					 Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+					 
+					 con = DriverManager.getConnection("jdbc:odbc:dql","root","root");
+					 for(int n=0; n<3; n++){
+						 stmt = con.createStatement();	
+						/** ***************** 创建执行语句方法 1 ******************* */
+						//rst = stmt.executeQuery("select top 5 * from 客户");
+						 rst = stmt.executeQuery("select top 5 雇员,雇员姓名,职务,市  from 雇员");
+						ResultSetMetaData meta = rst.getMetaData();
+						int colSize = meta.getColumnCount();
+						for(int i=0; i<colSize; i++){					
+							System.out.print(meta.getColumnName(i+1) + "\t");
+						}
+						System.out.println("\nindex="+(n+1));
+						// 输出结果
+						int nCol = 1;
+						while (rst.next()) {
+							for(int i=nCol; i<nCol+1; i++){	
+								//for(int i=nCol; i<colSize; i++){	
+								System.out.print(i+";"+rst.getObject(i+1) + "\t");
+								//String remark = new String(rst.getBytes(i+1), "gbk");
+								//System.out.print(i+";"+ remark + "\t");
+							}
+							System.out.println();
+
+						}
+						if (stmt.getMoreResults()){
+							while (rst.next()) {
+								System.out.print(rst.getObject(1) + " ");
+							}
+						}
+						
+						// 关闭对象
+						stmt.close();
+						System.out.println();
+						//Thread.sleep(100);
+					 }
+					
+				} catch (ClassNotFoundException cnf) {
+					System.out.println("没找到驱动程序");
+					cnf.printStackTrace();
+				} catch (Exception se) {
+					se.printStackTrace();
+				}finally{
+					try {
+						con.close();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
+			}
